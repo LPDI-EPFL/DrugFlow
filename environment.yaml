@@ -1,0 +1,30 @@
+name: sbdd
+
+channels:
+  - pytorch
+  - conda-forge
+  - anaconda
+  - pyg
+  - nvidia
+
+dependencies:
+  - python=3.11.8
+  - pytorch=2.2.1=*cuda12.1*
+  - pytorch-cuda=12.1
+  - pytorch-lightning=2.2.1
+  - rdkit=2023.09.6
+  - openbabel=3.1.1
+  - biopython=1.83
+  - scipy=1.12.0
+  - pyg=2.5.1
+  - pytorch-scatter=2.1.2
+  - ProDy=2.4.0
+  - wandb=0.16.3
+  - pandas=2.2.2
+  - pip=24.0
+  - pip:
+      - posebusters==0.3.1
+      - useful_rdkit_utils==0.65
+      - fcd==1.2.2
+      - webdataset==0.2.86
+      - prolif==2.0.3

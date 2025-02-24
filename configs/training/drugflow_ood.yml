@@ -1,0 +1,83 @@
+run_name: drugflow_ood # iclr_drugflow_T5000_confidence_ru10
+pocket_representation: CA+
+virtual_nodes: [0, 10]
+flexible: False
+flexible_bb: False
+
+train_params:
+  logdir: ./runs # symlink to any location you like
+  datadir: ./processed_crossdocked # symlink to the dataset location
+  enable_progress_bar: True
+  num_sanity_val_steps: 0
+  batch_size: 64
+  accumulate_grad_batches: 2
+  lr: 5.0e-4
+  n_epochs: 1000
+  num_workers: 0
+  gpus: 1
+  clip_grad: True
+  gnina: gnina
+  sample_from_clusters: False
+  sharded_dataset: False
+
+wandb_params:
+  mode: online  # disabled, offline, online
+  entity: lpdi
+  group: crossdocked
+
+loss_params:
+  discrete_loss: VLB  # VLB or CE
+  lambda_x: 1.0
+  lambda_h: 50.0
+  lambda_e: 50.0
+  lambda_chi: null
+  lambda_trans: null
+  lambda_rot: null
+  lambda_clash: null
+  timestep_weights: null
+  regularize_uncertainty: 10.0
+
+simulation_params:
+  n_steps: 5000
+  prior_h: marginal # uniform, marginal
+  prior_e: uniform # uniform, marginal
+  predict_final: False
+  predict_confidence: True
+
+eval_params:
+  eval_epochs: 100
+  n_eval_samples: 4
+  n_sampling_steps: 500
+  eval_batch_size: 16
+  visualize_sample_epoch: 1
+  n_visualize_samples: 100
+  visualize_chain_epoch: 1
+  keep_frames: 100
+  sample_with_ground_truth_size: True
+
+predictor_params:
+  heterogeneous_graph: True
+  backbone: gvp
+  num_rbf_time: 16
+  edge_cutoff_ligand: null
+  edge_cutoff_pocket: 10.0
+  edge_cutoff_interaction: 10.0
+  cycle_counts: True
+  spectral_feat: False
+  reflection_equivariant: False
+  num_rbf: 16
+  d_max: 15.0
+  self_conditioning: True
+  augment_residue_sc: False
+  augment_ligand_sc: False
+  normal_modes: False
+  add_chi_as_feature: False
+  angle_act_fn: null
+  add_all_atom_diff: False
+
+  gvp_params:
+    n_layers: 5
+    node_h_dim: [ 128, 32 ]  # (s, V)
+    edge_h_dim: [ 128, 32 ]
+    dropout: 0.0
+    vector_gate: True

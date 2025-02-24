@@ -1,0 +1,90 @@
+run_name: flexflow
+pocket_representation: CA+
+virtual_nodes: [0, 10]
+flexible: True
+flexible_bb: False
+
+train_params:
+  logdir: ./runs  # symlink to any location you like
+  datadir: ./processed_crossdocked # symlink to the dataset location
+  enable_progress_bar: False
+  num_sanity_val_steps: 0
+  batch_size: 64
+  accumulate_grad_batches: 2
+  lr: 5.0e-4
+  lr_step_size: null
+  lr_gamma: null
+  n_epochs: 700
+  num_workers: 4
+  gpus: 1
+  clip_grad: True
+  gnina: gnina  # add Gnina location to path
+  sample_from_clusters: False
+  sharded_dataset: False
+
+wandb_params:
+  mode: online  # disabled, offline, online
+  entity:
+  group: crossdocked
+
+loss_params:
+  discrete_loss: VLB  # VLB or CE
+  reduce: sum  # 'mean' or 'sum'
+  lambda_x: 0.015
+  lambda_h: 2.5 
+  lambda_e: 0.25 
+  lambda_chi: 0.002
+  lambda_trans: null
+  lambda_rot: null
+  lambda_clash: null
+  regularize_uncertainty: null
+  timestep_weights: null 
+
+simulation_params:
+  n_steps: 5000
+  prior_h: marginal # uniform, marginal
+  prior_e: uniform # uniform, marginal
+  predict_final: False
+  predict_confidence: False
+  scheduler_chi:
+    type: polynomial
+    k: 3  # constant for exponential scheduler kappa(t)=(1-t)^k
+
+eval_params:
+  eval_epochs: 100
+  n_loss_per_sample: 100
+  n_eval_samples: 4
+  n_sampling_steps: 500
+  eval_batch_size: 16
+  visualize_sample_epoch: 1
+  n_visualize_samples: 100
+  visualize_chain_epoch: 1
+  keep_frames: 100
+  sample_with_ground_truth_size: True
+
+predictor_params:
+  heterogeneous_graph: True
+  backbone: gvp
+  num_rbf_time: 16
+  edge_cutoff_ligand: null
+  edge_cutoff_pocket: 10.0
+  edge_cutoff_interaction: 10.0
+  cycle_counts: True
+  spectral_feat: False
+  reflection_equivariant: False
+  num_rbf: 16
+  d_max: 15.0
+  self_conditioning: True
+  augment_residue_sc: False
+  augment_ligand_sc: False
+  normal_modes: False
+  add_chi_as_feature: False
+  angle_act_fn: null
+  add_all_atom_diff: True
+
+  gvp_params:
+    n_layers: 5
+    node_h_dim: [ 128, 32 ]  # (s, V)
+    edge_h_dim: [ 128, 32 ]
+    dropout: 0.0
+    vector_gate: True
