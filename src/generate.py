@@ -63,13 +63,16 @@ if __name__ == "__main__":
     p.add_argument('--molecule_size', type=str, required=False, default=None, help="Maximum number of atoms in the sampled molecules. Can be a single number or a range, e.g. '15,20'. If None, size will be sampled.")
     p.add_argument('--output', type=str, required=False, default='samples.sdf', help="Output file.")
     p.add_argument('--n_samples', type=int, required=False, default=10, help="Number of sampled molecules.")
-    p.add_argument('--batch_size', type=int, required=False, default=64, help="Batch size.")
+    p.add_argument('--batch_size', type=int, required=False, default=32, help="Batch size.")
     p.add_argument('--pocket_distance_cutoff', type=float, required=False, default=8.0, help="Distance cutoff to define the pocket around the reference ligand.")
     p.add_argument('--n_steps', type=int, required=False, default=None, help="Number of denoising steps.")
     p.add_argument('--device', type=str, required=False, default='cuda:0', help="Device to use.")
     p.add_argument('--datadir', type=Path, required=False, default=Path(basedir, 'src', 'default'), help="Needs to be specified to sample molecule sizes.")
     p.add_argument('--seed', type=int, required=False, default=42, help="Random seed.")
     p.add_argument('--filter', action='store_true', required=False, default=False, help="Apply basic filters and keep sampling until `n_samples` molecules passing these filters are found.")
+    p.add_argument('--metrics_output', type=str, required=False, default=None, help="If provided, metrics will be computed and saved in csv format at this location.")
+    p.add_argument('--gnina', type=str, required=False, default=None, help="Path to a gnina executable. Required for computing docking scores.")
+    p.add_argument('--reduce', type=str, required=False, default=None, help="Path to a reduce executable. Required for computing interactions.")
     args = p.parse_args()
 
     utils.set_deterministic(seed=args.seed)
@@ -136,10 +139,11 @@ if __name__ == "__main__":
     # Start sampling
     smiles = set()
     sampled_molecules = []
+    metrics = []
     Path(args.output).parent.absolute().mkdir(parents=True, exist_ok=True)
     print(f'Will generate {args.n_samples} samples')
 
-    evaluator = FullEvaluator()
+    evaluator = FullEvaluator(gnina=args.gnina, reduce=args.reduce)
 
     with tqdm(total=args.n_samples) as pbar:
         while len(sampled_molecules) < args.n_samples:
@@ -155,12 +159,7 @@ if __name__ == "__main__":
                     num_nodes=molecule_size,
                 )
 
-                added_molecules = 0
-                if not args.filter:
-                    sampled_molecules.extend(rdmols)
-                    added_molecules = len(rdmols)
-
-                else:
+                if args.filter or (args.metrics_output is not None):
                     results = []
                     with tempfile.TemporaryDirectory() as tmpdir:
                         for mol, receptor in zip(rdmols, rdpockets):
@@ -171,9 +170,12 @@ if __name__ == "__main__":
                     table = pd.DataFrame(results)
                     table['novel'] = ~table['representation.smiles'].isin(smiles)
                     table = aggregate_metrics(table)
+                    
+                added_molecules = 0
+                if args.filter:
                     table['passed_filters'] = (
                         (table['posebusters'] == 1) &
-                        (table['reos'] == 1) &
+                        # (table['reos'] == 1) &
                         (table['chembl_ring_systems'] == 1) &
                         (table['novel'] == 1)
                     )
@@ -183,7 +185,20 @@ if __name__ == "__main__":
                             smiles.add(smi)
                             added_molecules += 1
 
+                    if args.metrics_output is not None:
+                        metrics.append(table[table['passed_filters']])
+                
+                else:
+                    sampled_molecules.extend(rdmols)
+                    added_molecules = len(rdmols)
+                    if args.metrics_output is not None:
+                        metrics.append(table)
+
                 pbar.update(added_molecules)
 
     # Write results
     utils.write_sdf_file(args.output, sampled_molecules)
+
+    if args.metrics_output is not None:
+        metrics = pd.concat(metrics)
+        metrics.to_csv(args.metrics_output, index=False)
