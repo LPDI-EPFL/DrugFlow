@@ -30,7 +30,7 @@ chmod +x $CONDA_PREFIX/bin/gnina
 A pre-built Docker container is available on [DockerHub](https://hub.docker.com/r/igashov/drugflow):
 
 ```bash
-docker pull igashov/drugflow
+docker pull igashov/drugflow:0.0.3
 ```
 
 ## Basic Usage
