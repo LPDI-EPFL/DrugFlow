@@ -1075,15 +1075,15 @@ class DrugFlow(pl.LightningModule):
                 idx = (i + 1) // (timesteps // return_frames)
                 idx = idx - 1
 
-                out_ligand['x'][idx] = ligand['x']
-                out_ligand['h'][idx] = ligand['h']
-                out_ligand['e'][idx] = ligand['e']
+                out_ligand['x'][idx] = ligand['x'].detach()
+                out_ligand['h'][idx] = ligand['h'].detach()
+                out_ligand['e'][idx] = ligand['e'].detach()
                 if pocket['x'].numel() > 0:
-                    out_pocket['x'][idx] = pocket['x']
-                    out_pocket['v'][idx] = pocket['v'][:, :self.n_atom_aa, :]
+                    out_pocket['x'][idx] = pocket['x'].detach()
+                    out_pocket['v'][idx] = pocket['v'][:, :self.n_atom_aa, :].detach()
                 if self.predict_confidence:
-                    out_ligand['sigma_x'][idx] = cumulative_uncertainty['sigma_x_squared'].sqrt()
-                    out_ligand['entropy_h'][idx] = cumulative_uncertainty['entropy_h']
+                    out_ligand['sigma_x'][idx] = cumulative_uncertainty['sigma_x_squared'].sqrt().detach()
+                    out_ligand['entropy_h'][idx] = cumulative_uncertainty['entropy_h'].detach()
 
         # remove frame dimension if only the final molecule is returned
         out_ligand = {k: v.squeeze(0) for k, v in out_ligand.items()}
@@ -1273,6 +1273,7 @@ class DrugFlow(pl.LightningModule):
 
         return rdmols, rdpockets, _ligand['name']
 
+    @torch.no_grad()
     def sample_chain(self, pocket, keep_frames, num_nodes=None, timesteps=None,
                      guide_log_prob=None, **kwargs):
 
