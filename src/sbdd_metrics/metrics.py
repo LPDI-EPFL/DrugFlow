@@ -717,7 +717,7 @@ class FullEvaluator(AbstractEvaluator):
             else:
                 self.evaluators.append(e)
 
-        print('Will use the follwoing evaluators:')
+        print('Will use the following evaluators:')
         for e in self.evaluators:
             print(f'- [{e.ID}]')
 
