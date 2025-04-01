@@ -344,7 +344,7 @@ if __name__ == "__main__":
 
     # decorator
     if torch.__version__ >= '2.0.0':
-        GEOMSTATS_DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+        GEOMSTATS_DEVICE = 'mps' if torch.backends.mps.is_available() else 'cuda' if torch.cuda.is_available() else 'cpu'
 
         def geomstats_tensor_type(func):
             def inner(*args, **kwargs):

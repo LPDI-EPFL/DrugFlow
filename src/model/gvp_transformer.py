@@ -454,7 +454,7 @@ if __name__ == "__main__":
     db = 10
     attn_heads = 9
 
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('mps' if torch.backends.mps.is_available() else 'cuda' if torch.cuda.is_available() else 'cpu')
 
 
     nodes = randn(n_nodes, node_dim, device=device)

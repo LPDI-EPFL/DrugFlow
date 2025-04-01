@@ -4,6 +4,7 @@ import os
 import warnings
 import tempfile
 import pandas as pd
+import torch
 
 from Bio.PDB import PDBParser
 from pathlib import Path
@@ -66,7 +67,7 @@ if __name__ == "__main__":
     p.add_argument('--batch_size', type=int, required=False, default=32, help="Batch size.")
     p.add_argument('--pocket_distance_cutoff', type=float, required=False, default=8.0, help="Distance cutoff to define the pocket around the reference ligand.")
     p.add_argument('--n_steps', type=int, required=False, default=None, help="Number of denoising steps.")
-    p.add_argument('--device', type=str, required=False, default='cuda:0', help="Device to use.")
+    p.add_argument('--device', type=str, required=False, default='cuda:0', help="Device to use (mps, cuda:0).")
     p.add_argument('--datadir', type=Path, required=False, default=Path(basedir, 'src', 'default'), help="Needs to be specified to sample molecule sizes.")
     p.add_argument('--seed', type=int, required=False, default=42, help="Random seed.")
     p.add_argument('--filter', action='store_true', required=False, default=False, help="Apply basic filters and keep sampling until `n_samples` molecules passing these filters are found.")
@@ -86,11 +87,19 @@ if __name__ == "__main__":
     
     if not args.filter:
         args.batch_size = min(args.batch_size, args.n_samples)
+    
+    # Select mps if available (Apple Silicon)
+    if torch.backends.mps.is_available():
+        args.device = 'mps'
 
     # Loading model
     chkpt_path = Path(args.checkpoint)
     chkpt_name = chkpt_path.parts[-1].split('.')[0]
-    model = DrugFlow.load_from_checkpoint(args.checkpoint, map_location=args.device, strict=False)
+    if torch.backends.mps.is_available():
+        model = DrugFlow.load_from_checkpoint(args.checkpoint, map_location='cpu', strict=False) # load model to cpu
+        model = model.to(args.device, dtype=torch.float32) # move model to mps with float32 type
+    else:
+        model = DrugFlow.load_from_checkpoint(args.checkpoint, map_location=args.device, strict=False)
     if args.datadir is not None:
         model.datadir = args.datadir
 
