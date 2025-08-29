@@ -213,12 +213,11 @@ DrugFlow and baseline samples are available on [Zenodo](https://zenodo.org/recor
 ## Reference
 
 ```bibtex
-@inproceedings{
+@article{
   schneuing2025multidomain,
-  title={Multi-domain Distribution Learning for De Novo Drug Design},
-  author={Arne Schneuing and Ilia Igashov and Adrian W. Dobbelstein and Thomas Castiglione and Michael M. Bronstein and Bruno Correia},
-  booktitle={The Thirteenth International Conference on Learning Representations},
-  year={2025},
-  url={https://openreview.net/forum?id=g3VCIM94ke}
+  title={Multi-domain distribution learning for de novo drug design},
+  author={Schneuing, Arne and Igashov, Ilia and Dobbelstein, Adrian W and Castiglione, Thomas and Bronstein, Michael and Correia, Bruno},
+  journal={arXiv preprint arXiv:2508.17815},
+  year={2025}
 }
 ```
