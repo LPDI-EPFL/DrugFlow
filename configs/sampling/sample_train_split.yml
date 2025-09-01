@@ -1,0 +1,25 @@
+checkpoint: <TODO>
+set: train
+sample_outdir: ./samples
+n_samples: 50
+sample_with_ground_truth_size: False
+device: cuda
+seed: 42
+sample: True
+postprocess: False
+evaluate: False
+reduce: reduce
+
+# Override training config parameters if necessary
+model_args:
+  
+  virtual_nodes: [0, 10]
+
+  train_params:
+    datadir: ./processed_crossdocked
+    gnina: gnina
+    batch_size: 2
+
+  eval_params:
+    n_sampling_steps: 100
+  
