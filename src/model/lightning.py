@@ -1197,7 +1197,7 @@ class DrugFlow(pl.LightningModule):
             pocket['n_bonds'] = pocket['n_bonds'].repeat(n_samples)
 
         _ligand = data_utils.repeat_items(data['ligand'], n_samples)
-        _ligand = randomize_tensors(_ligand, exclude_keys=['size', 'name'])  # avoid data leakage
+        # _ligand = randomize_tensors(_ligand, exclude_keys=['size', 'name'])  # avoid data leakage
 
         batch = {"ligand": _ligand, "pocket": pocket}
         num_nodes = self.parse_num_nodes_spec(batch, spec=num_nodes, size_model=size_model)
