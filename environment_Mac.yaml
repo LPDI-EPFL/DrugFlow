@@ -1,0 +1,30 @@
+name: drugflow2
+
+channels:
+  - conda-forge
+  - pyg
+  - bioconda
+
+dependencies:
+  - python=3.11.11
+  - pytorch=2.4.1
+  - pytorch-lightning=2.5.0
+  - rdkit=2024.03.5
+  - openbabel=3.1.1
+  - biopython=1.85
+  - scipy=1.15.2
+  - pyg=2.6.1
+  - pytorch-scatter=2.1.2
+  - ProDy=2.4.1
+  - wandb=0.16.6
+  - pandas=2.2.2
+  - posebusters=0.3.1
+  - fcd=1.2.2
+  - webdataset=0.2.100
+  - prolif=2.0.3
+  - reduce=4.14
+  - qvina=2.1.0
+  - pip=25.0.1
+  - pip:
+      - useful_rdkit_utils==0.65
+

@@ -24,6 +24,16 @@ and add the Gnina executable for docking score computation
 wget https://github.com/gnina/gnina/releases/download/v1.1/gnina -O $CONDA_PREFIX/bin/gnina
 chmod +x $CONDA_PREFIX/bin/gnina
 ```
+### Conda Environment for Mac (Apple Silicon)
+
+Create a conda/mamba environment 
+```
+conda env create -f environment_Mac.yaml -n drugflow
+conda activate drugflow
+```
+
+Gnina is not available for Apple Silicon as it depends on libmolgrid, which heavily depends on cuda kernels. Qvina is installed in the conda environment as an alternative for docking scoring.
+
 
 ### Docker Container
 

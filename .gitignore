@@ -6,3 +6,6 @@ notebooks/
 *DS_Store
 samples/
 crossdocked/
+/checkpoints
+DrugFlow on Apple Silicon.md
+/output
